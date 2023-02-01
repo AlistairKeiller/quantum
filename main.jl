@@ -1,11 +1,11 @@
-using QuantumOptics, CairoMakie
+using QuantumOptics, GLMakie
 
 
 Npoints = 160
 Npointsy = 120
 
-xmin = -30
-xmax = 50
+xmin = -20
+xmax = 20
 b_position = PositionBasis(xmin, xmax, Npoints)
 b_momentum = MomentumBasis(b_position)
 
@@ -53,11 +53,21 @@ p0_y = 0.5
 T = collect(0.0:0.1:20.0)
 tout, ψt = timeevolution.schroedinger(T, ψ, H)
 
+f = Figure()
+
+# ax = Axis(f[1,1])
 
 frame = Observable(1)
 
-fig, ax, hm = heatmap(@lift(reshape(abs2.(ψt[$frame].data),(Npoints, Npointsy))))
+heatmap(f[1,1][1,1],@lift(reshape(abs2.(ψt[$frame].data),(Npoints, Npointsy))))
 
-record(fig, "hm3.mp4", 1:length(ψt); framerate = 30) do t
-    frame[] = t
+simulate = Button(f[2,1][1,1]; label = "simulate", tellwidth = false)
+
+on(simulate.clicks) do clicks
+    frame[] = 1
+    @async for i in 1:length(ψt)
+        frame[] = i
+        sleep(1/30)
+    end
+    frame[] = 1
 end
