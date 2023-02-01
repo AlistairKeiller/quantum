@@ -1,8 +1,8 @@
 using QuantumOptics, GLMakie
 
 
-Npoints = 200
-Npointsy = 150
+Npoints = 240
+Npointsy = 180
 
 xmin = -20
 xmax = 20
