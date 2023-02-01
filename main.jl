@@ -59,13 +59,14 @@ sg = SliderGrid(f[2,1],
     (label = "p0_y", range = -2:0.1:2, startvalue = p0_y),
     (label = "σ", range = 0:0.1:5, startvalue = σ),
 )
-simulate = Button(f[3,1]; label = "simulate", tellwidth = false)
+simulate = Button(f[3,1][1,1]; label = "simulate", tellwidth = false)
+export_button = Button(f[3,1][1,2]; label = "export", tellwidth = false)
 
 ψx = gaussianstate(b_position, x0, p0_x, σ)
 ψy = gaussianstate(b_positiony, y0, p0_y, σ)
 ψ = ψx ⊗ ψy
 
-T = collect(0.0:0.1:5.0)
+T = collect(0:0.1:5)
 tout, ψt = timeevolution.schroedinger([0,.1], ψ, H)
 
 frame = Observable(ψt[1].data)
@@ -82,5 +83,21 @@ on(simulate.clicks) do clicks
     @async for full_frame in ψt
         frame[] = full_frame.data
         sleep(1/30)
+    end
+end
+
+on(export_button.clicks) do clicks
+    ψx = gaussianstate(b_position, to_value(sg.sliders[1].value), to_value(sg.sliders[3].value), to_value(sg.sliders[5].value))
+    ψy = gaussianstate(b_positiony, to_value(sg.sliders[2].value), to_value(sg.sliders[4].value), to_value(sg.sliders[5].value))
+    ψ = ψx ⊗ ψy
+
+    tout, ψt = timeevolution.schroedinger(T, ψ, H)
+
+    recFrame = Observable(ψt[1].data)
+
+    fig, ax, hm = heatmap(@lift(reshape(abs2.($recFrame),(Npoints, Npointsy))))
+
+    record(fig, "thing.mp4", ψt; framerate = 30) do full_frame
+        recFrame[] = full_frame.data
     end
 end
