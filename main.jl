@@ -33,7 +33,7 @@ Hkinx_FFT = LazyProduct(Txp, Hkinx, Tpx)
 Hkiny_FFT = LazyProduct(Txp, Hkiny, Tpx)
 
 function potential(x,y)
-    if -.1 < x < .1 && !(2 < y < 5 || -5 < y < -2)
+    if -.1 < x < .1 && !(1 < y < 3 || -3 < y < -1)
         100
     else
         0
