@@ -32,8 +32,14 @@ Hkiny = LazyTensor(b_comp_p, [1, 2], (one(b_momentum), py^2/2))
 Hkinx_FFT = LazyProduct(Txp, Hkinx, Tpx)
 Hkiny_FFT = LazyProduct(Txp, Hkiny, Tpx)
 
-
-potential(x,y) = exp(-(x^2 + y^2)/30.0)
+function potential(x,y)
+    if -.1 < x < .1 && !(2 < y < 5 || -5 < y < -2)
+        100
+    else
+        0
+    end
+end
+# potential(x,y) = exp(-(x^2 + y^2)/30.0)
 V = potentialoperator(b_comp_x, potential)
 
 
@@ -41,9 +47,9 @@ H = LazySum(Hkinx_FFT, Hkiny_FFT, V)
 
 
 x0 = -10
-y0 = -5
-p0_x = 1.5
-p0_y = 0.5
+y0 = 0
+p0_x = 2
+p0_y = 0
 σ = 2.0
 
 ψx = gaussianstate(b_position, x0, p0_x, σ)
@@ -54,8 +60,6 @@ T = collect(0.0:0.1:20.0)
 tout, ψt = timeevolution.schroedinger(T, ψ, H)
 
 f = Figure()
-
-# ax = Axis(f[1,1])
 
 frame = Observable(1)
 
@@ -69,5 +73,4 @@ on(simulate.clicks) do clicks
         frame[] = i
         sleep(1/30)
     end
-    frame[] = 1
 end
