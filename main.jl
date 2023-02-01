@@ -66,11 +66,11 @@ simulate = Button(f[3,1]; label = "simulate", tellwidth = false)
 ψ = ψx ⊗ ψy
 
 T = collect(0.0:0.1:5.0)
-tout, ψt = timeevolution.schroedinger(T, ψ, H)
+tout, ψt = timeevolution.schroedinger([0,.1], ψ, H)
 
-frame = Observable(1)
+frame = Observable(ψt[1].data)
 
-heatmap(f[1,1][1,1],@lift(reshape(abs2.(ψt[$frame].data),(Npoints, Npointsy))))
+heatmap(f[1,1][1,1],@lift(reshape(abs2.($frame),(Npoints, Npointsy))))
 
 on(simulate.clicks) do clicks
     ψx = gaussianstate(b_position, to_value(sg.sliders[1].value), to_value(sg.sliders[3].value), to_value(sg.sliders[5].value))
@@ -79,8 +79,8 @@ on(simulate.clicks) do clicks
 
     tout, ψt = timeevolution.schroedinger(T, ψ, H)
 
-    @async for i in 1:length(ψt)
-        frame[] = i
+    @async for full_frame in ψt
+        frame[] = full_frame.data
         sleep(1/30)
     end
 end
