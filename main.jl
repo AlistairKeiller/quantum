@@ -1,16 +1,16 @@
 using QuantumOptics, GLMakie
 
 
-Npoints = 160
-Npointsy = 120
+Npoints = 200
+Npointsy = 150
 
 xmin = -20
 xmax = 20
 b_position = PositionBasis(xmin, xmax, Npoints)
 b_momentum = MomentumBasis(b_position)
 
-ymin = -20
-ymax = 20
+ymin = -15
+ymax = 15
 b_positiony = PositionBasis(ymin, ymax, Npointsy)
 b_momentumy = MomentumBasis(b_positiony)
 
@@ -67,9 +67,8 @@ export_button = Button(f[3,1][1,2]; label = "export", tellwidth = false)
 ψ = ψx ⊗ ψy
 
 T = collect(0:0.1:5)
-tout, ψt = timeevolution.schroedinger([0,.1], ψ, H)
 
-frame = Observable(ψt[1].data)
+frame = Observable(ψ.data)
 
 heatmap(f[1,1][1,1],@lift(reshape(abs2.($frame),(Npoints, Npointsy))))
 
